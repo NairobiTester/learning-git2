@@ -1,0 +1,512 @@
+***********Learning Git and GitHub***************
+Links Extra
+=> https://help.github.com/
+=> https://guides.github.com/
+=> https://git-scm.com/book/en/v2/Getting-Started-About-Version-Control
+Using Git within Powershell
+=>https://haacked.com/archive/2011/12/13/better-git-with-powershell.aspx
+Using Git on the command line
+=>https://services.github.com/on-demand/downloads/github-git-cheat-sheet.pdf
+=>http://ndpsoftware.com/git-cheatsheet.html
+=>https://git-scm.com/doc
+
+=>https://learngitbranching.js.org/
+=>http://git-school.github.io/visualizing-git
+=>GitHub Learning Labs are free, guided tutorials that can be installed and 
+found at https://lab.github.com.
+=>https://help.github.com/articles/caching-your-github-password-in-git
+=>https://help.github.com/articles/about-organizations/
+
+
+A) Git Tutorial for Biginners -  by Mosh Hamedani / @moshhamedani / codewithmosh.c
+
+Git GUI tools - Git Kraken and Sourcetree
+
+NB: Some commands used below are not Git commands but standard unix/linux commands for modifying and manipulating files e.g ls, cd, echo, explorer etc.
+
+1.) Configuring Git 
+=> Settings applied at different levels:
+	- System level - applies to all users
+	- Global - applies to all repositories of the current users
+	- Local - applies to the current repository
+
+=> Settings  - Name, Email, Default Editor, Line Ending 
+>> git config --global user.name "Stephen OkenoChile" 	// Has double qoutes because of space between names
+>> git config --global user.email diligentwriting@gmail.com
+>> git config --global core.editor "code --wait" 	// Setting VS Code as default editor
+>> git config --global -e 	// Opens the global settings for editing
+>> git config --global core.autocrlf true  // Setting end of lines, for Mac replace true with input
+Accessing Git Help
+>> git config --help
+>> git config -h  // summarized help
+
+2. Initializing a repository
+>> mkdir Moon
+>> cd Moon
+>> git init 		// Initialize an empty Git Repository
+>> ls 			// lists files and folders in a directory
+>> ls -a 		// lists files and folders in a directory including hidden ones like the .git folder in an initialized repository
+>> explorer .git 	// opens the .git folder in Windows. In Mac use 'open .git'
+>> mkdir Test
+>> rm -rf Test 		// Removes the created directory and files
+
+3. Git Workflow
+>> echo hello > file1.txt  // Writes hello into file1.txt
+>> echo hello > file2.txt
+>> git status // Run this to see the status of the working directory and the staging area. 
+In this case, it shows two untracked files since they haven't been added into the staging area.
+=>Adding files to the staging area 
+>> git add file1.txt  (You can add multiple files using: 'git add file1.txt file2.txt' or 'git add *.txt' or 'git add .')
+>> git add file2.txt
+>> git status (shows two new files added in the staging area.)
+Modifying file1.txt
+>> Use 'git rm --cached <file>...' to unstage
+>> echo world >> file1.txt   // Two '>' are used for the purposes of appending 'world' into file1.txt. 
+>> git status // Shows the two files (file1.txt and file2.txt) that were earlier added into the staging area and also 
+indicates that file1.txt in the working directory has been modified.
+>> use "git add <file>..." to update what will be committed 
+>> use "git checkout -- <file>..." to discard changes in working directory
+>> git add file1.txt
+>> git status (shows the updated files in the staging area: file1.txt and file2.txt)
+>> git commit -m "Initial commit" // Commits the changes
+Detailed commit description
+>> git commit // opens 'COMMIT_EDITMSG' in the default editor, type a short description followed by a long description commit msg
+=> After closing 'COMMIT_EDITMSG' in the editor and you go back to the terminal, there is a successful commit
+=> Don't commmit too small or too large files. Each commit should represent a logically separate chainset.
+=> Do we always have to stage our changes before commiting them? No. Only skip the staging phase if you know what you are doing. Skipping
+the staging area is for those who are 100% sure that their changes don't have to be reviewed.
+Example: Edit file1.txt and commit it in one step
+>> echo test >> file1.txt   // appends 'test' to file1.txt
+>> git commit -a -m "Fix the bug that prevented the users from signing up." // -a is for commiting all modified files and -m is for the 
+commit message. NB: 99% of the time you should always stage your code
+
+=>Removing files
+>> rm file2.txt  //removes file2.txt
+>> git status // shows 1 unstaged change
+=> use 'git restore <file>' to discard changes in a working directory
+>> git status (shows file2.txt is deleted from working directory but it still exists in the staging area.)
+>> git ls-files  //shows the files in the staging area
+=>Every time we make changes, we have to stage them using the 'git add' command.
+>> git add file2.txt // Stages the specific deletion
+>> git ls-files    // Shows only file1.txt. file2.txt is no longer in the staging area.
+>> git status     // shows one change (a deletion) that is waiting to be committed.
+Removing files from both the working directory and the staging area at once.
+>> git rm file2.txt  // you can also use 'git rm file1.txt file2.txt' or 'git rm *.txt' for removing multiple files
+
+=>Renaming or moving files
+>> mv file1.txt to main.js    // Renames file1.txt to main.js
+>> git status  // shows 2 unstaged changes: a deleted file1.txt and one untracked 'main.js' file
+>> git add file1.txt  //stages the deletion
+>> git add main.js   // adds the new untracked file
+>> git status   // Shows file1.txt has been renamed to main.js
+
+Special Git command for renaming or moving files
+>> git mv main.js file1.js // renames main.js to file1.js
+>> git status //shows main.js has been renamed to file1.js
+>> git commit -m "Refactor code." // After committing, the msg shows '1 file changed, 0 insertions, 0 deletions').
+
+4. Ignoring files
+=> For most projects, you'll have to tell Git to ignore certain files and directories such as log files or binary files that Git 
+generated as a result of compiling our code.
+>> mkdir logs
+>> echo hello > logs/dev.log
+>> git status // Shows untracked directory called logs. We don't want to add this to the staging area because we don't want Git to 
+track this. To do this we have to create a special file that has no name but an extension '.gitignore' and it should be in the root
+of your project.
+>> echo logs/ > .gitignore
+>> code .gitignore  // opens '.gitignore' in VS Code and shows the directory 'logs/' present. You can list as many files as you want
+here for the purposes of ignoring. e.g main.log, *.log.
+>> git status // The untracked directory called 'logs/' is no longer there. There is a new untracked file called '.gitignore'
+>> git add .gitignore //Add the file .gitignore to the staging area
+>> git commit -m "Add gitignore"  
+=> Files added to .gitignore are only ignored if they haven't already been included in the repository. If you accidentally include 
+a file in the repository and then add it to .gitignore, it won't be ignored.
+Example:
+>> mkdir bin
+>> echo hello > bin/app.bin 
+>> git add . 
+>> git commit -m "Add bin."
+>> code .gitignore  // open .gitignore and add "bin/"
+>> git status   // Shows modified .gitignore
+>> git add . // Stage the changes
+>> git commit -m "Include bin/ in gitignore."
+Git is not going to ignore the changes in 'bin/' because it is already tracking it.
+>> echo helloworld > bin/app.bin
+>> git status   // Shows 'modified: bin/app.bin.' This is not what we want. To solve this problem 'bin/app.bin' has to be removed 
+from the staging area.
+>> git ls-files   // Shows the files in the staging area
+>> git rm --cached -r bin/    //Remove the entire bin/ from the staging area
+>> git ls-files    // Shows that bin/ is not present in the staging area
+>> git status     // Shows "deleted: bin/app.bin"
+>> git commit -m "Remove the bin directory that was accidentally committed." // From here onwards, Git will not track the changes in 
+this directory.
+For Example
+>> echo test > bin/app.bin
+>> git status // Shows a clean working directory because bin/ is no longer being tracked
+=> When we go to github.com/github/gitignore, we will find several gitignore templates for different programming languages.
+
+
+5. The short 'git status' command: 'git status -s'
+>> echo sky >> file1.js
+>> echo sky > file2.js
+>> git status  // Shows modified fie1.js and a new untracked file: file2.js
+>> git status -s  // Shows:  M file1.js  	// the left column is the staging area, the right column is the working directory
+			    ?? file2.js		//  This is a new file, that's why there is 2 ??
+>> git add file1.js   // Add file1.js to the staging area
+>> git status -s      // Shows:  M  file1.js  // Green 'M' on the left: changes in the staging area
+				 ?? file2.js  
+>> echo ocean >> file1.js  // modify file1.js again
+>> git status -s  // Shows: MM file1.js	// Green M on the left: staging area. Red M on the right: new changes in the working directory
+			    ?? file2.js	
+>> git add file1.js
+>> git status -s 		// Shows: M file1.js  // Green M: all the changes that were in the WD have been added to the Staging Area
+					  ?? file2.js
+>> git add file2.js
+>> git status -s       // Shows: M  file1.js // Green M on the left - meaning modified file1.js added to the staging area
+				 A  file2.js // Green A on the left - Meaning file2.js has just been added to the staging area
+
+6. Viewing the staged and unstaged changes
+=> Before committing what we have in the staging area, we need to review our code to avoid committing bad code or broken code into our repo.
+>> git diff --staged   // Reveals what we have in the staging area that's going in the next commit. // NB: comparing files using the terminal is 
+not actually advised. Always use visual tools when doing this. This command compares the old copy of a file (a/file) in the last commit with 
+the new one (b/file) in the staging area. Changes in the old copy are indicated by a - sign and changes in the new copy by a + sign.
+>> git diff   // Run this to see changes in our working directory that haven't been staged yet. In this case it shows nothing because all the 
+changes in the WD have been staged. This can also be achieved using the short status command: git status -s
+>> git status -s // In this case, it shows all the changes made in the WD are now in the staging area.
+>> code .file1.js // Open file1.js with VS Code and make some changes. Change the first line to 'hello world'
+>> git status -s   // Shows: MM file1.js	//First M is green, 2nd is red indicating modified file1.js in WD
+			     A  file2.js
+>> git diff // Use this to look at the above unstaged changes. Changes in the old copy are indicated in red and a - sign, in the new copy they are 
+indicated in Green and a + sign.
+=> Visual Diff Tools for comparing files - KDiff3 and P4Merge (crossplatform) and WinMerge(Windows only). You can also use VS Code.
+
+Using VS Code for comparing files
+=> we have to set two config settings
+>> git config --global diff.tool vscode // setting vscode as default diff tool.
+>> git config --global difftool.vscode.cmd "code --wait --diff $LOCAL $REMOTE"  // Tell git how to launch vscode as a difftool.
+>> git config --global -e // To check if the settings are right. Add $LOCAL and $REMOTE to cmd ="code --wait --diff " since they have dissapeared
+for some unknown reason. Save and close the file and go back in Windows terminal and type the following command.
+>> git difftool  // launches our visual diff tool for comparing files. Press Y when prompted to launch VS Code. Looks at changes we have in WD 
+and what we have in the staging area.
+>> git difftool --staged  // looks at the changes in the staging area.
+
+NB: Difftool is not much used these days. These days, most editors and IDEs allow us to view both staged and unstaged changes as part of our 
+dev environment. See how to do this later.
+
+7. Viewing the Commits history
+>> git log // Shows the commits created sorted from the latest to the earliest. Press Q to quit and go back to command terminal.
+>> git log --oneline //Shows a short summary of the commits
+>> git log --oneline --reverse  // reverses the sort order
+
+8. Viewing the contents of a commit
+>> git show 7bdc497  // To view a specific commit. You don't have to type the entire hash value as long as the first few ones that you type 
+are not replicated in  another commit.
+>> git show HEAD     // To view the last commit
+>> git show HEAD~1   // To view the commit before the last commit
+>> git ls-tree      // For showing all the files and directories in a commit
+For example
+>> git ls-tree HEAD~1  // Shows all the files (rep by blobs) and directories (rep by trees) in this specific commit.
+=>Viewing an object in Git's database (the objects can be commits, Blobs(Files), Trees (Directories), Tags)
+>> git show  64629   //Shows the content of the bin tree.	 
+
+9. Unstaging Changes
+>> git status -s   // Shows: MM file1.js   // First M is Green, 2nd is red
+			     A  file2.js
+Consider that we've realized that the changes in file1.js shouldn't go in the next commit, we've to undo the operation 'git add file1.js' using 
+the 'git restore' command.
+>> git restore --staged file1.js // you can also restore multiple files: <file1.js file2.js> or <*.js> or <.>
+>> git status -s    // Shows:  M file1.js 	//only a single red M on the right. The changes in the staging area have been reverted back to WD
+			      A  file2.js 
+>> git restore --staged file2.js  // restores file2.js from staging area to the new untracked file in the WD because this file hasn't been committed or added to the repo.
+>> git status -s  // Shows:  M file1.js 
+			       ?? file2.js // reverted to new untracked file
+
+10. Discarding local changes
+>> git restore file1.js // will undo the changes in file1.js, it copies the status in the next environment(staging area) into WD
+>> git restore .   	// undo all the local changes.
+>> git status -s   	// shows: '?? file2.js' because it was a new untracked file. There is no previous version of this file in the staging area 
+or in the repository. Below is how to remove this file.
+>> git clean -fd 	//-f for force, and -d for removing whole directories
+>> git status -s 	// file2.js is gone
+
+11. Restoring a file to an earlier version
+Once Git tracks a file, it stores every version of that file in its database. Therefore, if we screw things, we can always restore a file 
+or directory to its previous version. Below we will demonstrate how to restore a deleted file.
+>> git rm file1.js   	// removes the file from both the working directory and the staging area
+>> git status -s    	// Shows: D file1.js  // D is green representing a deleted file in the staging area.
+>> git commit -m "Delete file1.js"
+=>Restore the file from the commit before the last one.
+>> git restore --source=HEAD~1 file1.js
+>> git status -s    	// Shows: ?? file1.js  ->new untracked file. This is how you can restore a file to a previous version.
+
+
+B). Git and GitHub Tutorial For Biginners - by amigoscode.com
+Github alternatives - GitLab, AWS CodeCommit, Bitbucket
+
+1. git init
+>> mkdir learning-git
+>> cd learning-git
+>> git init .   	// Initialize empty Git repository
+
+2. git add
+create three files in the initialed 'learning-git/' using the touch command
+>> touch index.html
+>> touch index.js
+>> touch main.css
+>> ls      		// shows the above 3 files
+>> git status  		// Shows the 3 new untracked files
+>> git add index.html   // adds index.html into the staging area
+>> git status      	// index.html is in the staging area while index.js and main.css are still untracked files in the WD.
+>> git rm --cached index.html 	//unstage 
+>> git status  		// all the 3 files are in the WD
+>> git add index.html
+>> git add index.js
+>> git status\\\\\\\\\\\\\\\\\\\\\\\\          // There are two files in the staging area: index.html and index.js
+>> git add .
+>> git status         // main.css is included with other files in the staging area
+>> git rm -r --cached . // Removes all the files in the staging area
+>> git status   // shows nothing is being tracked
+>> git add .
+>> git status   // all 3 files have been staged
+
+>> git rm -r --cached . //Remove them again
+>> mkdir test
+>> cd test
+>> touch test.js // create test.js in test
+>> git status	// shows 4 untracked files (../index.html, ../index.js, ../main.css, ./)
+>> ls  // lists test.js as the only file inside test/
+>> git add .   
+>> git status  // shows test.js in the staging area and the other 3 files as untracked files. This is because we're inside of the folder test.
+>> git add -A  // Adds all the files even if we're inside the folder test/
+>> git status  // Shows all the files have been added
+=> Always use 'git add .' as this will let you know exactly what you're adding into the staging area.
+
+3. git commit
+>> cd .. // takes you back to the previous directory
+>> git commit -m "bootstrap project" // commits the four files in the staging area.
+>> git status // Shows there is nothing to commit
+>> git log  // shows the commit
+>> git show a153021  //Shows ther contents of the specific commit.
+>> vi index.js      // opens index.js using Vim editor
+=> press 'i' then insert 'console.log("hello git");'
+=> press escape, and type ':' and then 'wq'
+=> We've just modified index.js
+>> cat index.js // shows the added content in index.js
+>> git status   // shows 'modified: index.js' which has not been staged for committing.
+>> git diff     // gives you the difference between what you have in the current working directory and what has been committed.
+>> git add .
+>> git status   // shows the modified index.js file has been staged
+>> git commit -m "Added console.log"  // Committing the changes
+>> git log  // shows the commit history
+>> git show 873462d
+
+4. git restore
+>> vi index.js //Delete the added content then press escape followed by ':' and 'wq'
+>> git diff // shows the deleted content of index.js
+>> git status //shows 'modified: index.js'
+>> git restore index.js  // Discards the changes
+>> git status // Shows nothing to commit
+>> git diff  // nothing has changed
+
+5. Amending a commit message
+>> ls // list available files to see if you have main.css
+>> vi main.css   // open file with Vim for editing
+>> Press 'i' for insert, type 'body {}', press escape, type':', and then 'wq' to save the changes.
+>> git status   // shows 'modified: main.css' in the WD.
+>> git add .
+>> git commit -m "hhfngshsjsjy"  // garbage commit message for purposes of editing/amending the commit later
+>> git log
+Amend the commit message
+>> git commit --amend -m "added body{} in main.css"
+>> git log  // shows the last commit has been edited
+
+6. git push
+=> GitHub is a platform for hosting and collaborating on Git repositories
+Creating a new repositories on GitHub
+=> Click on 'New', enter 'learning-git2' as repo name, select public(these repos can be seen by everyone), and click on Create.
+Pushing from local repository
+>> git remote add origin https://github.com/NairobiTester/learning-git2.git
+>> git branch -M main      // changes the master branch to main
+>> git push -u origin main // If you haven't configured the ssh keys in GitHub, you will not be able to push. Otherwise this will work.
+Later, you'll have to use 'git push' only because the main repository has already been pushed to GitHub.
+
+Configuring SSH Keys
+-Click on your profile avatar on the right and go to settings then Click on "SSH and GPG keys' option on the left.
+-Click on the link 'generating SSH keys'  followed by 'Generating a new SSH key and adding it to the ssh-agent'
+-Follow the installation process for your OS, in this case, Windows.
+-Open GitBash
+>> ssh-keygen -t ed25519 -C "diligentwriting@gmail.com"
+>> When prompted with "Enter a file in which to save the key (/c/Users/YOU/.ssh/id_ALGORITHM):" [Press enter] to leave as default
+>> When prompted with "Enter passphrase (empty for no passphrase):" [Press Enter] to leave it empty or [Type a passphrase]
+>> When prompted with "Enter same passphrase again:" [Press Enter] if you pressed enter earlier or [Type passphrase again]
+=>Adding your SSH key to the SSH agent. If you have GitHub Desktop installed, you can use it to clone repositories and not deal 
+with SSH keys.
+>> eval "$(ssh-agent -s)"
+=> Add your SSH private key to the ssh-agent. If you created your key with a different name, or if you are adding an existing key 
+that has a different name, replace id_ed25519 in the command with the name of your private key file.
+>> ssh-add ~/.ssh/id_ed25519
+>> Click on "Adding a new SSH key to your GitHub account."
+>> cat ~/.ssh/id_ed25519.pub // shows the SSH key
+>> clip < ~/.ssh/id_ed25519.pub //copying the SSH key to your clipboard
+=> Go to GitHub and paste the key
+-ProfileAvatar -> Settings -> SSH and GPG keys -> New SSH Key, paste, then click on 'Add SSH key'.
+You're prompted to confirm access to Github, do so.
+=> Go ahead and push the repository again and see if it works, that is if it didn't work earlier when you hadn't set up SSH keys.
+>> git push -u origin main  // commits on git should now be pushed to github
+=> if you go now to the repository (learning-git2) that you created on GitHub, you'll find your commits uploaded.
+>> vi main.go   // Crreate a Golang file using Vim editor
+=> Press enter, press 'i' for insert, type: 'func main() {}', then press escape, type ':' then 'wq' and hit enter.
+>> git status // Shows 1 untracked file 'main.go'
+>> git add .
+>> git commit -m "Added main.go with empty main function"
+>> git log    // to see the commit in the commits history
+>> git push  // Push the changes to remote(Github). You don't have now to use 'git push -u origin main' because the local repository has
+ already been pushed to GitHub.
+=> Now if you go to Github and refresh your repository, you'll find the changes added.
+
+7. git pull
+=> click on 'Add a README' button available after the last file on the list of the files available on your repository to add a new file 
+on remote.
+=> Type "This repo was used to learn how to use Git from Amigoscode" then scroll down and click 'Commit new file'
+Go back to terminal/Gitbash and type:
+>> ls   // shows files available currently: index.html, index.js, main.css, main.go, test/
+>> git pull // brings the latest changes from remote
+>> ls     // Now README.md is also available
+=> Go back to main.go on GitHub, click on it for editing, click on edit icon, add 'package main', scroll down to 'Commit changes', type
+'added package main' and click on 'Commit changes'
+Go back to terminal
+>> cat main.go  // shows that main.go only has this content: "funct main() {}"
+>> git pull    // pulls the changes from remote
+>> cat main.go  // now 'package main' is included
+
+8. branches
+>> git branch  // displays the branch that you're currently on in the local machine
+>> git branch -r // displays the branches on remote server (Github)
+>> git branch -a // list all branches
+=>When creating a new branch, you're basically making a copy of the existing branch(main), such that you can later make changes without 
+affecting main.
+>> git branch feature-a
+>> git branch -a  //feature-a is listed among the other existing branches
+>> git checkout feature-a    // Switching to branch feature-a
+>> git checkout -       // Switches back to the previous branch
+>> git checkout -       // Will go back to feature-a
+>> code utils.js    // Create a new file using VS code
+>> git status       // shows utils.js as the untracked file in feature-a
+>> git add .
+>> git commit -m "utils.js with todo"
+>> git log         //shows the last commit in the main branch as "added package main" and "utils.js with todo" commit is listed 
+as that of feature-a.
+=> If you switch back to main and do a 'git log' the commit on feature-a branch is not visible
+>> git checkout -
+>> git log 
+>> git checkout - // goes back to feature-a branch  
+>> git push -u origin feature-a  // Pushes feature-a to remote/Github
+=> When you go back to GitHub, feature-a is now included in the list of branches.
+>> git checkout main // switches to main branch
+>> git checkout -b todelete   // creates a new branch (todelete) and switches into it
+>> git branch -a   // todelete is listed among the branches
+>> git checkout -
+>> git branch -d todelete   // deletes the branch todelete
+
+9. =>Merging changes from a created branch into main/master branch
+On Github
+=> Go to 'Pull Requests', then click on 'New Pull Request,' leave main as base branch and select feature-a as compare branch.
+=> Click on 'Create pull request', leave a comment describing what the changes are about, then click 'Create pull request.' In this case, 
+we will leave the comment blank.
+- you can choose and request reviewers to review your changes before they are submitted.
+- You can insert labels such as 'bugs', 'enhancements.' etc.
+- You can also check if certain "Checks" have been passed before merging the pull request.
+=> Click on 'Confirm pull request' then 'Confirm merge.'
+=> You can also delete the branch which can always be restored if needed.
+=> When you go to 'Code' in the menu, you'll see the merge pull request included as part of the commits on the main branch. Now there are
+8 commits, the earlier 6 on main branch, the one that was earlier on feature-a, and the merge pull request itself.
+
+Back on terminal
+>> git log --oneline    // changes made on remote are still not visible
+>> git pull    // pull the changes from remote
+>> git log  --oneline  // Now the changes are available locally
+>> git branch -d feature-a // Deleting feature-a from local machine. NB: We also deleted it from remote/Github earlier.
+>> git branch feature-a    // feature-a is now not listed
+
+10. Git workflow
+=> When working on a new feature, the first thing to do is to pull the latest changes from master/main.
+=> Create a new branch using 'git checkout -b branch-name'
+=> Work on the new feature, do a bunch of commits etc
+=> It is advisable for you to rebase your changes against master. Take, for example, if you have been working on the new feature for a day
+or two, master will move on. You'll therefore want to bring the latest changes from master into your local machine. Rebasing minimizes 
+the chances of conflicts. When you have conflicts in the commits, you have to resolve each one of them.
+--What is advisable to do
+=> First, squash all of your commits, and then rebase master.
+=> When rebasing: after squashing you will have one single commit, remove it/put it aside (stash the commit), bring all the changes from
+master or main and then bring your stashed commit back on top of the changes from main. NB: If you have one single commit, you are able to
+resolve the changes once and you're good to go. 
+=> You then push to remote, you raise a pull request, you have a discussion with your peers, and if the changes are approved then you merge 
+your commit into the main/master branch.
+
+11. Dealing with conflicts
+>> git checkout -b feature-xyz    // Create a branch 'feature-xyz' and then checkout into it
+>> ls    // lists the files: index.html, index.js, main.css, main.go, README.md, test/, utils.js
+>> cat index.html     // Shows index.html is empty, so we're going to add some html code into it
+>> code index.html    // Open index.html using vscode and put some html code 
+>> git add .
+>> git commit -m "add some html"
+>> git push     // gives you the command below that you can copy-paste - (for the case of a new branch)
+>> git push --set-upstream origin feature-xyz (or you can use 'git push -u origin feature-xyz')
+=> On Github, pretend that you're another person working on this same branch and you want to make some changes on index.html.
+=> Open the branch, go to index.html, press on edit icon, and add some code inside the body (<h1> This is a Heading</h1>
+<p>This is a paragraph.</p>) then press 'Commit changes'.
+=> Open index.html on your local repository and add some conflicting changes inside the body: <p> This is another paragraph </p>
+>> git add .
+>> git commit -m "Added another p tag"
+>> git push
+- fails because the changes in the remote were not pulled into local repo before pushing and thus there is some conflict betwn 
+the two.
+=> Merging conflicts
+>> git pull // pulls changes from remote repository, tries to merge them automatically with those in local repo but fails because 
+of existing conflict
+>> open VS Code and make the necessary changes to the conflicting code.
+>> git status     // shows unmerged paths
+>> git add .
+>> git status     // shows changes to be committed
+>> git commit -m "resolved conflict"
+>> git status     // shows nothing to commit
+>> git push       // pushes changes successfully to remote
+
+12. => Git rebase
+Go to Github
+=>Open main branch and add some html code to index.html (body:<p> first paragraph </p>) and press 'Commit changes.'
+=>Rebase is about taking changes from 'main' branch and adding our changes on top of it
+>> git pull -r origin main  // displays error about merge conflict
+>> go to index.html on vs code and click 'accept current change'
+>> git rebase --continue    // continues the rebase, opens a 'COMMIT_EDITMSG' on Vs Code. Close it and go back to terminal.
+Still there is a merge conflict. Go to VsCode and merge the changes manually.
+>> git add .
+>> git rebase --continue // Opens 'COMMIT_EDITMSG' which you have to close. Still there is another last conflict. Resolve 
+it appropriately on VsCode, save, and go back to terminal.
+>> git add .
+>> git rebase --continue   // Opens 'COMMIT_EDITMSG' which you have to leave as is and close. Successfully rebased and 
+updated
+>> git push        // Fails. Says the current branch is behind. This is because the changes we pulled and merged were from
+main branch and feature-xyz branch in remote doesn't know about them.
+>> git push -f     // forces the push. All the changes are now available on feature-xyz branch on remote.
+=> On Github, Go to 'Pull Requests' and click on "Compare & Pull Request" to see the changes you've made. You can leave a 
+comment if you want and then click on 'Create pull request'. You can click on 'Merge pull request' if you want.
+
+13. => Git Rebase Recap
+As we saw above, we had to resolve a couple of commits in order to rebase properly. Usually, what people tend to do when
+they merge to main/master, and considering you have 3 or more commits on your pull request, is to squash the commits into 
+1 single commit before merging into main/master branch. This way, the conflicts are resolved only once.
+
+14. Github GUI Clients - Github Desktop, Sourcetree, VSCode with Git plugin.
+
+=> Setup Gitpod for browser-based development environment
+=> On Github, click on Explore to find open source projects to work on.
+
+Other Git Commands
+>> git rebase --abort     // aborts a rebase when you're in the middle of a rebase
+>> git merge master	  // merges the changes from master into your current branch
+
+
+
+
+
