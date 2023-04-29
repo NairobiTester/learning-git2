@@ -20,7 +20,7 @@ found at https://lab.github.com.
 
 A) Git Tutorial for Biginners -  by Mosh Hamedani / @moshhamedani / codewithmosh.c
 
-Git GUI tools - Git Kraken and Sourcetree
+Git GUI tools - GitHub Desktop, Git Kraken, and Sourcetree
 
 NB: Some commands used below are not Git commands but standard unix/linux commands for modifying and manipulating files e.g ls, cd, echo, explorer etc.
 
@@ -383,7 +383,7 @@ Go back to terminal
 >> git branch  // displays the branch that you're currently on in the local machine
 >> git branch -r // displays the branches on remote server (Github)
 >> git branch -a // list all branches
-=>When creating a new branch, you're basically making a copy of the existing branch(main), such that you can later make changes without 
+=> When creating a new branch, you're basically making a copy of the existing branch(main), such that you can later make changes without 
 affecting main.
 >> git branch feature-a
 >> git branch -a  //feature-a is listed among the other existing branches
@@ -410,7 +410,7 @@ as that of feature-a.
 
 9. =>Merging changes from a created branch into main/master branch
 On Github
-=> Go to 'Pull Requests', then click on 'New Pull Request,' leave main as base branch and select feature-a as compare branch.
+ => Go to 'Pull Requests', then click on 'New Pull Request,' leave main as base branch and select feature-a as compare branch.
 => Click on 'Create pull request', leave a comment describing what the changes are about, then click 'Create pull request.' In this case, 
 we will leave the comment blank.
 - you can choose and request reviewers to review your changes before they are submitted.
@@ -502,9 +502,99 @@ they merge to main/master, and considering you have 3 or more commits on your pu
 => Setup Gitpod for browser-based development environment
 => On Github, click on Explore to find open source projects to work on.
 
-Other Git Commands
+
+
+*****Other Git Commands and General linux commands*****
+
+>> cd .. // goes back to previous folder
+>> ls -ltr // lists files and folders and their dates of modification
+>> ls -lart // lists all files (including hidden files) in the current directory in long format, sorted by 
+modification time in reverse order.
+
+>> git log --pretty=oneline // logs commits in oneline each but with full hashes
+>> git log -n 2 // logs the last 2 commits
+>> git diff-tree -r <commit hash> // Get list of files that have been changed in a particular commit
 >> git rebase --abort     // aborts a rebase when you're in the middle of a rebase
->> git merge master	  // merges the changes from master into your current branch
+>> git merge master/main	  // merges the changes from master into your current branch
+>> git reset --soft <commit harsh> // This is used when for example you have 5 commits and you want to remove the 
+last two while keeping the changes in them intact in the third commit. The commit hash is for the 3rd commit. Only use
+this command when in local repository. If you've already committed to remote, never go back in history. Instead, use a new 
+commit to undo some unnecessary changes.
+>> git revert <commit hash>  // Imagine you have 5 commits but you want to get rid of the changes in the 3rd commit, the safe way is to use 
+this command because it will create a 6th commit that reverts the changes in the 3rd commit without completely deleting it from the commit history.
+You include a commit message.
+
+>> git add remote origin Server_Repo_URL  // Used for linking local repo to a remote server e.g Github. Is used when you want to 
+push from local repo to remote for the first time.
+>> git push -u origin main/master  //making a first push in a new repository
+>> git push origin --delete <branch name>  // Deletes a branch from the remote server
+
+=> git pull (on a new repository)
+>> git branch --set-upstream-to=origin/main main
+folowed by 
+>> git pull 
+(or just use >> git pull origin main)
+If you get fatal error (refusing to merge unrelated histories) use: 
+>> git pull origin main --allow-unrelated-histories
+
+=> Creating ssh keys
+>> ssh-keygen -t rsa -C <email address> 
+=> you'll find the keys in the specified folder when the keys were being created.
+=> copy the public key and go and paste it on GitHub
+>> ssh -T git@github.com      // Checking if the ssh keys are working correctly. Type yes if you recieve a prompt and 
+enter passphrase if you created one.
+
+=> git clone
+-cloning is about copying a remote repo into your local machine
+-> Go to a repo on Github that you want to clone, in the 'Code' button, sel3ct SSH or HTTPS (whichever will work)
+and copy the URL. Go back to gitbash terminal and  paste it after the 'git clone' command.
+>> git clone git@github.com:NairobiTester/Web-Development-Project.git 	// SSH
+>> git clone https://github.com/NairobiTester/Web-Development-Project.git  // HTTPS
+
+=> Git Commands to Resolve Conflicts
+>> git log --merge  // helps in producing the list of commits that are causing the conflict
+>> git diff   // helps in finding the differences btwn the states of repositories or files
+>> git checkout   // used to undo the changes made to the file, or for changing branches
+>> git reset --mixed // undo the changes in the working directory and staging area
+>> git merge --abort // helps in exiting the merge process and returning back to the state before the merging began
+>> git reset  // used at the time of merge conflict to reset the conflicted files to their original state
+
+Resolving conflicts
+>> git init A // initializes repo A
+>> git init B // Initializes repo B
+>> cd A
+>> git remote add origin <github url>
+>> git pull origin master/main
+
+>> cd ../B
+>> git remote add origin <github url>
+>> git pull origin master/main
+
+>> cd ../A    // Goes back to repo A
+=> open a file and edit
+>> git status
+>> git add .
+>> git commit -m"blablabla"
+>> git push origin main/master
+
+>> cd ../B
+=> Open the same file that you openned in A and make some changes>> git add .
+>> git commit -m"blablabla"
+>> git push origin main/master // updates are rejected because the tip of your current branch is behind
+
+>> git pull --rebase origin master/main // run this after a conflict
+>> git mergetool  // opens merge tool for resolving conflicts manually.
+>> git rebase --continue // run this after resolving conflicts manually
+>> git push origin master/main   //pushes the changes to remote repo.
+
+Check
+>> https://www.git-tower.com/learn/git/advanced-git-kit/
+
+
+
+
+
+
 
 
 
